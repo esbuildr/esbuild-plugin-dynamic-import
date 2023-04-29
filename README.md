@@ -1,7 +1,6 @@
 # esbuild-plugin-dynamic-import
 
 [![GitHub Actions](https://github.com/esbuildr/esbuild-plugin-dynamic-import/workflows/CI/badge.svg)](https://github.com/esbuildr/esbuild-plugin-dynamic-import/actions/workflows/ci.yml)
-[![Codecov](https://img.shields.io/codecov/c/github/esbuildr/esbuild-plugin-dynamic-import.svg)](https://codecov.io/gh/esbuildr/esbuild-plugin-dynamic-import)
 [![type-coverage](https://img.shields.io/badge/dynamic/json.svg?label=type-coverage&prefix=%E2%89%A5&suffix=%&query=$.typeCoverage.atLeast&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fesbuildr%2Fesbuild-plugin-dynamic-import%2Fmain%2Fpackage.json)](https://github.com/plantain-00/type-coverage)
 [![npm](https://img.shields.io/npm/v/esbuild-plugin-dynamic-import.svg)](https://www.npmjs.com/package/esbuild-plugin-dynamic-import)
 [![GitHub Release](https://img.shields.io/github/release/esbuildr/esbuild-plugin-dynamic-import)](https://github.com/esbuildr/esbuild-plugin-dynamic-import/releases)
@@ -19,6 +18,7 @@ Dynamic import variables support for esbuild
 - [Usage](#usage)
   - [Install](#install)
   - [API](#api)
+  - [Usage](#usage-1)
 - [Sponsors](#sponsors)
 - [Backers](#backers)
 - [Changelog](#changelog)
@@ -53,6 +53,37 @@ esbuild.build({
   ],
 })
 ```
+
+### Usage
+
+```js
+const lazyImport = () => import(`./pages/${page}`)
+
+// comments are allowed
+const lazyImport = () =>
+  import(
+    /* comment1 */ // inline comment
+    /**
+     * multiline comment
+     */
+    `./pages/${
+      page
+      // inline comment
+      /* comment2 */
+    }`
+  )
+```
+
+The expressions are matched with RegExp instead of parsing as AST for performance reason,
+so you should only use it for simple cases as following:
+
+1. relative path required
+2. template literal required
+3. no `)` in the `()` pair
+4. extensions are optional
+
+Additionally, the built-in functionality will be available in esbuild soon (maybe):
+<https://github.com/evanw/esbuild/pull/2508#issue-1356677535>
 
 ## Sponsors
 
