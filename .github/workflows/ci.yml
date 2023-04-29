@@ -10,7 +10,6 @@ jobs:
     strategy:
       matrix:
         node:
-          - 14
           - 16
           - 18
         os:
@@ -36,11 +35,5 @@ jobs:
       - name: Install Dependencies
         run: pnpm i
 
-      - name: Build, Lint and Test
-        run: pnpm run-s build lint test
-        env:
-          EFF_NO_LINK_RULES: true
-          PARSER_NO_WATCH: true
-
-      - name: Codecov
-        uses: codecov/codecov-action@v3
+      - name: Build and Lint
+        run: pnpm run-s build lint

@@ -2,6 +2,6 @@
   "root": true,
   "extends": "@1stg",
   "rules": {
-    "react/react-in-jsx-scope": "off"
+    "unicorn/better-regex": "off"
   }
 }

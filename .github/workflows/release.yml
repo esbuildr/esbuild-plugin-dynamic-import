@@ -35,8 +35,8 @@ jobs:
         with:
           publish: pnpm release
           version: pnpm run version
-          commit: 'chore: release lib-boilerplate'
-          title: 'chore: release lib-boilerplate'
+          commit: 'chore: release esbuild-plugin-dynamic-import'
+          title: 'chore: release esbuild-plugin-dynamic-import'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
