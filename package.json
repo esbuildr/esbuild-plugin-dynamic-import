@@ -1,6 +1,6 @@
 {
   "name": "esbuild-plugin-dynamic-import",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "description": "Dynamic import variables support for esbuild",
   "repository": "git+https://github.com/esbuildr/esbuild-plugin-dynamic-import.git",
