@@ -47,8 +47,9 @@ import { dynamicImport } from 'esbuild-plugin-dynamic-import'
 esbuild.build({
   plugins: [
     dynamicImport({
-      // filter: // optional
-      // loader: // optional
+      // filter: // optional, default: /\.([cm]?[jt]s|[jt]sx)$/
+      // ignore: // optional, default: /\bnode_modules\b/
+      // loader: // optional, default: adjust with path extension
     }),
   ],
 })

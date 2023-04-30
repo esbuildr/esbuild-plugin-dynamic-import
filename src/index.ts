@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises'
-import { dirname } from 'node:path'
+import { dirname, extname } from 'node:path'
 
 import { type Loader, type Plugin } from 'esbuild'
 import glob from 'fast-glob'
@@ -23,58 +23,62 @@ const LOADERS = {
 
 export interface DynamicImportPluginOptions {
   filter?: RegExp
+  ignore?: RegExp
   loader?: Loader
 }
 
 export const dynamicImport = ({
-  filter,
+  filter = /\.([cm]?[jt]s|[jt]sx)$/,
+  ignore = /\bnode_modules\b/,
   loader,
 }: DynamicImportPluginOptions = {}): Plugin => ({
   name: 'dynamic-import',
   // eslint-disable-next-line sonarjs/cognitive-complexity
   setup(build) {
-    build.onLoad(
-      { filter: filter || /\.([cm]?[jt]s|[jt]sx)$/ },
-      async ({ path }) => {
-        const ext = path.slice(path.lastIndexOf('.')) as keyof typeof LOADERS
+    build.onLoad({ filter }, async ({ path }) => {
+      if (ignore.test(path)) {
+        return
+      }
 
-        let contents = await fs.readFile(path, 'utf8')
+      const ext = extname(path) as keyof typeof LOADERS
 
-        const matches = contents.matchAll(DYNAMIC_IMPORT_REGEX)
+      let contents = await fs.readFile(path, 'utf8')
 
-        let dynamicImportIndex = -1
+      const matches = contents.matchAll(DYNAMIC_IMPORT_REGEX)
 
-        for (const match of matches) {
-          const [full, _, __, importPath] = match
+      let dynamicImportIndex = -1
 
-          const plainPath = importPath.replaceAll(COMMENTS_REGEX, '').trim()
+      for (const match of matches) {
+        const [full, _, __, importPath] = match
 
-          if (
-            (!plainPath.startsWith('`./') && !plainPath.startsWith('`../')) ||
-            !plainPath.endsWith('`') ||
-            !plainPath.includes('${')
-          ) {
-            continue
-          }
+        const plainPath = importPath.replaceAll(COMMENTS_REGEX, '').trim()
 
-          const globImport = plainPath
-            .replaceAll(/\$\{[\s\S]*\}/g, '*')
-            .slice(1, -1)
+        if (
+          (!plainPath.startsWith('`./') && !plainPath.startsWith('`../')) ||
+          !plainPath.endsWith('`') ||
+          !plainPath.includes('${')
+        ) {
+          continue
+        }
 
-          let paths = await glob(globImport, {
-            cwd: dirname(path),
-            globstar: false,
+        const globImport = plainPath
+          .replaceAll(/\$\{[\s\S]*\}/g, '*')
+          .slice(1, -1)
+
+        let paths = await glob(globImport, {
+          cwd: dirname(path),
+          globstar: false,
+        })
+
+        if (globImport.lastIndexOf('*') > globImport.lastIndexOf('.')) {
+          paths = paths.map(p => {
+            const index = p.lastIndexOf('.')
+            return index > 0 ? p.slice(0, index) : p
           })
+        }
 
-          if (globImport.lastIndexOf('*') > globImport.lastIndexOf('.')) {
-            paths = paths.map(p => {
-              const index = p.lastIndexOf('.')
-              return index > 0 ? p.slice(0, index) : p
-            })
-          }
-
-          contents =
-            `function __dynamicImportRuntime${++dynamicImportIndex}__(path) { switch (path) {
+        contents =
+          `function __dynamicImportRuntime${++dynamicImportIndex}__(path) { switch (path) {
         ${paths.map(p => `case '${p}': return import('${p}');`).join('\n')}
         ${`default: return new Promise(function(resolve, reject) {
               (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
@@ -82,21 +86,17 @@ export const dynamicImport = ({
               );
             })\n`}   }
          }\n\n` +
-            contents.replace(
-              full,
-              full.replace(
-                'import',
-                `__dynamicImportRuntime${dynamicImportIndex}__`,
-              ),
-            )
-        }
-        return dynamicImportIndex === -1
-          ? null
-          : {
-              contents,
-              loader: loader || LOADERS[ext],
-            }
-      },
-    )
+          contents.replace(
+            full,
+            full.replace(
+              'import',
+              `__dynamicImportRuntime${dynamicImportIndex}__`,
+            ),
+          )
+      }
+      return dynamicImportIndex === -1
+        ? null
+        : { contents, loader: loader || LOADERS[ext] }
+    })
   },
 })
