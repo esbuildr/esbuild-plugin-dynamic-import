@@ -43,7 +43,7 @@
     "esbuild": "^0.17.18",
     "size-limit": "^8.2.4",
     "size-limit-preset-node-lib": "^0.2.0",
-    "type-coverage": "^2.25.0",
+    "type-coverage": "^2.27.0",
     "typescript": "^5.0.4"
   },
   "size-limit": [
