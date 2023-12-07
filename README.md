@@ -1,5 +1,9 @@
 # esbuild-plugin-dynamic-import
 
+Deprecated: This plugin is unnecessary now because it has been supported by esbuild natively from [`v0.19.0`](https://github.com/evanw/esbuild/releases/tag/v0.19.0).
+
+---
+
 [![GitHub Actions](https://github.com/esbuildr/esbuild-plugin-dynamic-import/workflows/CI/badge.svg)](https://github.com/esbuildr/esbuild-plugin-dynamic-import/actions/workflows/ci.yml)
 [![type-coverage](https://img.shields.io/badge/dynamic/json.svg?label=type-coverage&prefix=%E2%89%A5&suffix=%&query=$.typeCoverage.atLeast&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fesbuildr%2Fesbuild-plugin-dynamic-import%2Fmain%2Fpackage.json)](https://github.com/plantain-00/type-coverage)
 [![npm](https://img.shields.io/npm/v/esbuild-plugin-dynamic-import.svg)](https://www.npmjs.com/package/esbuild-plugin-dynamic-import)
