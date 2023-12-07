@@ -44,7 +44,7 @@
     "size-limit": "^8.2.4",
     "size-limit-preset-node-lib": "^0.2.0",
     "type-coverage": "^2.25.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.3.3"
   },
   "size-limit": [
     {
